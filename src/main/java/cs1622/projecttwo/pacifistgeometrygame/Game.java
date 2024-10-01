@@ -1,5 +1,6 @@
 package cs1622.projecttwo.pacifistgeometrygame;
 
+import javafx.animation.AnimationTimer;
 import javafx.application.Application;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
@@ -16,65 +17,144 @@ import javafx.stage.Stage;
  * Main Game class to run the game, end the game and update score.
  */
 public class Game extends Application {
-    // Canvas for size of interface
-    private Canvas screen_size;
+    // Instantiate canvas from Canvas parent class to determine size of interface
+    private Canvas canvas;
 
-    // GraphicsContext for graphics of interface
-    private GraphicsContext graphics;
+    // Instantiate graphics context from GraphicsContext parent class for game graphics
+    private GraphicsContext gc;
 
+    // Nano time
+    private long lastTime = System.nanoTime();
+
+    // Screen dimensions
+    private static final double screenWidth = 2880;
+    private static final double screenHeight = 1800;
+
+    // Border dimensions
+    private static final double borderMargin = 50; // Margin around the border
+    private static final double borderThickness = 20; // Thickness of the border
+
+    // Instantiate player object
+    private Player player;
+    private Border border; // New border object
+
+    // Game loop animation timer
+    private AnimationTimer gameLoop;
+
+    /**
+     * Start the program, open the game's screen and call the function to display the title screen.
+     * @param primaryStage
+     */
     @Override
     public void start(Stage primaryStage) {
         // Game Title
         primaryStage.setTitle("Pacifist Geometry War Game");
 
+        // Show starting screen
+        showStartScreen(primaryStage);
+    }
+
+    /**
+     * When player opens the game, show the start screen so player can start or quit game.
+     * @param primaryStage
+     */
+    public void showStartScreen(Stage primaryStage) {
         // Create surface of interface (size)
-        screen_size = new Canvas(900, 650);
-        graphics = screen_size.getGraphicsContext2D();
-        graphics.setFill(Color.BLACK);
-        graphics.fillRect(0, 0, screen_size.getWidth(), screen_size.getHeight());
+        canvas = new Canvas(2880, 1800); // Screen size
+        gc = canvas.getGraphicsContext2D(); // Render screen
+        gc.setFill(Color.BLACK); // Fill color of rect (black)
+        gc.fillRect(0, 0, canvas.getWidth(), canvas.getHeight()); // Fill this size rect (screen)
 
         // Create buttons
         Button startButton = new Button("Start Game");
         Button quitButton = new Button("Quit Game");
 
         // Set button actions
-        startButton.setOnAction(e -> startGame());
-        quitButton.setOnAction(e -> primaryStage.close());
+        startButton.setOnAction(e -> startGame(primaryStage));
+        quitButton.setOnAction(e -> primaryStage.close()); // Closes stage and screen, ending program.
 
         // Button styles
-        startButton.setStyle("-fx-background-color: black; -fx-border-radius: 5; -fx-border-color: cyan; -fx-text-fill: cyan; -fx-font-size: 29");
-        quitButton.setStyle("-fx-background-color: black; -fx-border-radius: 5; -fx-border-color: cyan; -fx-text-fill: cyan; -fx-font-size: 30");
+        // Black background, border-radius, color and width , text color and size of font
+        startButton.setStyle("-fx-background-color: black; -fx-border-radius: 5; -fx-border-color: cyan; -fx-border-width: 10; -fx-text-fill: cyan; -fx-font-size: 50");
+        quitButton.setStyle("-fx-background-color: black; -fx-border-radius: 5; -fx-border-color: cyan; -fx-text-fill: cyan; -fx-border-width: 10; -fx-font-size: 52");
 
         // Arrange buttons in a vertical box
-        VBox buttonBox = new VBox(20); // 20 pixels spacing
-        buttonBox.getChildren().addAll(startButton, quitButton);
-        buttonBox.setAlignment(Pos.CENTER); // Center buttons
+        VBox buttonBox = new VBox(10); // 10 pixels spacing for box that contains buttons
+        buttonBox.getChildren().addAll(startButton, quitButton); // Add buttons to button box
+        buttonBox.setAlignment(Pos.CENTER); // Center buttons in box
 
         // Title display
         Label titleLabel = new Label("Pacifist");
         titleLabel.setTextFill(Color.CYAN); // Set text color to cyan
-        titleLabel.setStyle("-fx-font-size: 80; -fx-padding: 20");
+        titleLabel.setStyle("-fx-font-size: 100; -fx-padding: 50"); // Font size, padding
 
-        // Arrange title and buttons in a vertical box
-        VBox titleBox = new VBox(100); // 10 pixels spacing
+        // Arrange title and buttons in a larger vertical box
+        VBox titleBox = new VBox(100); // 100 pixels spacing
         titleBox.setAlignment(Pos.TOP_CENTER); // Center the title horizontally
-        titleBox.getChildren().addAll(titleLabel, buttonBox); // Add title and buttons to the VBox
+        titleBox.getChildren().addAll(titleLabel, buttonBox); // Add title and button box to the VBox
 
         // Create a StackPane to center the VBox in the scene
         StackPane root = new StackPane();
-        root.getChildren().addAll(screen_size, titleBox); // Add canvas and titleBox to root
+        root.getChildren().addAll(canvas, titleBox); // Add canvas and titleBox to root, which contains other boxes
 
         // Create scene and set it
-        Scene primaryScene = new Scene(root, 900, 650);
-        primaryStage.setScene(primaryScene);
+        Scene startScene = new Scene(root, screenWidth, screenHeight);
+        primaryStage.setScene(startScene);
         primaryStage.show();
     }
 
-    private void startGame() {
-        // Logic to start the game (you can implement your game start logic here)
-        System.out.println("Game Started!"); // Placeholder for game start logic
+    /**
+     * Show second screen, the game screen, by calling the start game function after a button click
+     * @param primaryStage
+     */
+    private void startGame(Stage primaryStage) {
+        // Clear start screen and start the game screen
+        StackPane gameRoot = new StackPane();
+        canvas = new Canvas(screenWidth, screenHeight); // Draw new canvas
+        gameRoot.getChildren().add(canvas); // Link canvas to gameRoot Stack Pane
+        Scene gameScene = new Scene(gameRoot, screenWidth, screenHeight); // Instantiate a new scene
+        primaryStage.setScene(gameScene); // Use gameScene on the primaryStage
+
+        // Fetch graphics context from canvas and assign it to gc
+        gc = canvas.getGraphicsContext2D();
+
+        // Initialize game objects
+        border = new Border(0, 0, screenWidth, screenHeight, borderThickness, Color.CYAN, borderMargin); // Border with margin and thickness
+        player = new Player(screenWidth / 2, screenHeight / 2, 200);
+
+        // Game loop
+        gameLoop = new AnimationTimer() {
+            @Override
+            public void handle(long now) {
+                double deltaTime = (now - lastTime) / 1_000_000_000.0; // Convert from nanoseconds to seconds
+                lastTime = now;
+
+                updateGame(deltaTime);
+                renderGame();
+            }
+        };
+
+        // Update and render game continuously after startGame() is called
+        gameLoop.start();
     }
 
+    /**
+     * Updates the game within a specified time and passes that to the player object
+     */
+    public void updateGame(double deltaTime) {
+        player.update(deltaTime);
+    }
+
+    // Renders the entire game
+    public void renderGame() {
+        // Clear the screen
+        gc.setFill(Color.BLACK);
+        gc.fillRect(0, 0, canvas.getWidth(), canvas.getHeight()); // Fill screen
+
+        // Render objects
+        border.render(gc);
+        // player.render(gc);
+    }
     public static void main(String[] args) {
         launch(args);
     }

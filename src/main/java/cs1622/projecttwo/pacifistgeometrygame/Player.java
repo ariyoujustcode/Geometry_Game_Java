@@ -46,5 +46,7 @@ public class Player extends GameObject {
         double[] yPoints = {y - height / 2, y + height / 2, y + height / 2};
 
         gc.fillPolygon(xPoints, yPoints, 3); // Draw the triangle
+        gc.setStroke(Color.WHITE);
+        gc.setLineWidth(2);
     }
 }

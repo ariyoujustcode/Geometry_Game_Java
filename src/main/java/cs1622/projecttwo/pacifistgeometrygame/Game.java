@@ -31,8 +31,9 @@ public class Game extends Application {
     private static final double screenHeight = 1800;
 
     // Border dimensions
-    private static final double borderMargin = 50; // Margin around the border
-    private static final double borderThickness = 20; // Thickness of the border
+    private static final double borderMargin = 5; // Margin around the border
+    private static final double borderThickness = 5; // Thickness of the border
+
 
     // Instantiate player object
     private Player player;
@@ -60,7 +61,7 @@ public class Game extends Application {
      */
     public void showStartScreen(Stage primaryStage) {
         // Create surface of interface (size)
-        canvas = new Canvas(2880, 1800); // Screen size
+        canvas = new Canvas(screenWidth, screenHeight); // Screen size
         gc = canvas.getGraphicsContext2D(); // Render screen
         gc.setFill(Color.BLACK); // Fill color of rect (black)
         gc.fillRect(0, 0, canvas.getWidth(), canvas.getHeight()); // Fill this size rect (screen)
@@ -119,7 +120,7 @@ public class Game extends Application {
         gc = canvas.getGraphicsContext2D();
 
         // Initialize game objects
-        border = new Border(0, 0, screenWidth, screenHeight, borderThickness, Color.CYAN, borderMargin); // Border with margin and thickness
+        border = new Border(0, 0, canvas.getWidth(), canvas.getHeight(), borderThickness, Color.CYAN, borderMargin); // Border with margin and thickness
         player = new Player(screenWidth / 2, screenHeight / 2, 200);
 
         // Game loop
@@ -145,15 +146,14 @@ public class Game extends Application {
         player.update(deltaTime);
     }
 
-    // Renders the entire game
+    // Renders the game
     public void renderGame() {
-        // Clear the screen
-        gc.setFill(Color.BLACK);
-        gc.fillRect(0, 0, canvas.getWidth(), canvas.getHeight()); // Fill screen
+        // Clear the canvas before rendering a new frame
+        gc.clearRect(0, 0, canvas.getWidth(), canvas.getHeight());
 
         // Render objects
-        border.render(gc);
-        // player.render(gc);
+        // border.render(gc);
+        player.render(gc);
     }
     public static void main(String[] args) {
         launch(args);

@@ -11,6 +11,7 @@ public class Border extends GameObject {
     private final Color borderColor; // Color of the border
     private final double margin; // Margin around the border
 
+
     // Constructor
     public Border(double x, double y, double width, double height, double thickness, Color borderColor, double margin) {
         super(x, y, width, height); // Call GameObject constructor
@@ -28,16 +29,19 @@ public class Border extends GameObject {
     // Unique render of border
     @Override
     public void render(GraphicsContext gc) {
-        // Set the fill color for the inner area (e.g., a darker color or black)
-        // gc.setFill(Color.CYAN); // Or any color you want for the inner area
-        // gc.fillRect(x + margin, y + margin, width - margin * 2, height - margin * 2);
+        // Step 1: Fill the entire canvas with a black background
+        gc.setFill(Color.BLACK);
+        gc.fillRect(0, 0, width, height);
 
-        // Set the stroke color for the border
-        gc.setStroke(borderColor); // Set the border color
+        // Step 2: Draw the black interior of the rectangle (the box itself)
+        gc.setFill(Color.BLACK); // Keep it black for the interior
+        gc.fillRect(margin, margin, width - 2 * margin, height - 2 * margin);
+
+        // Step 3: Draw the cyan border (stroke) around the rectangle
+        gc.setStroke(Color.CYAN);
         gc.setLineWidth(thickness); // Set the border thickness
+        gc.strokeRect(margin, margin, width - 2 * margin, height - 2 * margin);
 
-        // Draw the border outline
-        gc.strokeRect(x + margin, y + margin, width - margin * 2, height - margin * 2);
     }
 }
 

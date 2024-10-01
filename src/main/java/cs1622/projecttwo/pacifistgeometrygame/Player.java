@@ -14,11 +14,38 @@ public class Player extends GameObject {
         this.speed = speed;
     }
 
-    // Method to update player's position and invincibility
+    // Method to update player's position
     @Override
     public void update(double deltaTime) {
         handleMovement(deltaTime);
 
+    }
+
+    // Update player position based on mouse coordinates
+    public void setPosition(double x, double y, Border border) {
+        // Get the boundaries of the Border
+        double minX = border.getX() + 5;
+        double minY = border.getY() + 5;
+        double maxX = minX + border.getWidth() - circleRadius * 2; // Subtracting player's width
+        double maxY = minY + border.getHeight() - circleRadius * 2; // Subtracting player's height
+
+        // Clamp the player's x position within the border
+        if (x < minX + circleRadius) {
+            this.x = minX + circleRadius;
+        } else if (x > maxX) {
+            this.x = maxX;
+        } else {
+            this.x = x;
+        }
+
+        // Clamp the player's y position within the border
+        if (y < minY + circleRadius) {
+            this.y = minY + circleRadius;
+        } else if (y > maxY) {
+            this.y = maxY;
+        } else {
+            this.y = y;
+        }
     }
 
     // Handle player movement based on input (simple WASD or arrow key logic)

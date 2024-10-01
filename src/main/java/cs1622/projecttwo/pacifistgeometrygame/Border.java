@@ -25,6 +25,15 @@ public class Border extends GameObject {
         gc.setStroke(Color.CYAN);
         gc.setLineWidth(10);
         gc.strokeRect(x, y, boxWidth, boxHeight);
+    }
 
+    // Getter for the border width
+    public double getWidth() {
+        return boxWidth;
+    }
+
+    // Getter for the border height
+    public double getHeight() {
+        return boxHeight;
     }
 }

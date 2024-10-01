@@ -30,7 +30,6 @@ public class Game extends Application {
     private static final double screenWidth = 1440;
     private static final double screenHeight = 800;
 
-
     // Instantiate player object
     private Player player;
 
@@ -120,6 +119,12 @@ public class Game extends Application {
         // Initialize game objects
         border = new Border(120, 50);
         player = new Player(screenWidth / 2, screenHeight / 2, 200);
+
+        // Add a mouse movement listener to the canvas
+        canvas.setOnMouseMoved(event -> {
+            // Update player's position to follow the mouse coordinates
+            player.setPosition(event.getX(), event.getY(), border);
+        });
 
         // Game loop
         gameLoop = new AnimationTimer() {

@@ -17,5 +17,15 @@ public abstract class GameObject {
     // Abstract methods for updating and rendering
     public abstract void update(double deltaTime);
     public abstract void render(GraphicsContext gc);
+
+    // Getter for x position
+    public double getX() {
+        return x;
+    }
+
+    // Getter for y position
+    public double getY() {
+        return y;
+    }
 }
 

@@ -27,17 +27,15 @@ public class Game extends Application {
     private long lastTime = System.nanoTime();
 
     // Screen dimensions
-    private static final double screenWidth = 2880;
-    private static final double screenHeight = 1800;
-
-    // Border dimensions
-    private static final double borderMargin = 5; // Margin around the border
-    private static final double borderThickness = 5; // Thickness of the border
+    private static final double screenWidth = 1440;
+    private static final double screenHeight = 800;
 
 
     // Instantiate player object
     private Player player;
-    private Border border; // New border object
+
+    // Border object
+    private Border border;
 
     // Game loop animation timer
     private AnimationTimer gameLoop;
@@ -120,7 +118,7 @@ public class Game extends Application {
         gc = canvas.getGraphicsContext2D();
 
         // Initialize game objects
-        border = new Border(0, 0, canvas.getWidth(), canvas.getHeight(), borderThickness, Color.CYAN, borderMargin); // Border with margin and thickness
+        border = new Border(120, 50);
         player = new Player(screenWidth / 2, screenHeight / 2, 200);
 
         // Game loop
@@ -151,8 +149,11 @@ public class Game extends Application {
         // Clear the canvas before rendering a new frame
         gc.clearRect(0, 0, canvas.getWidth(), canvas.getHeight());
 
+        gc.setFill(Color.BLACK); // Fill color of rect (black)
+        gc.fillRect(0, 0, canvas.getWidth(), canvas.getHeight()); // Fill this size rect (screen)
+
         // Render objects
-        // border.render(gc);
+        border.render(gc);
         player.render(gc);
     }
     public static void main(String[] args) {

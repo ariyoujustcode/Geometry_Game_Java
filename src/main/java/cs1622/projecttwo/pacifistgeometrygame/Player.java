@@ -2,15 +2,15 @@ package cs1622.projecttwo.pacifistgeometrygame;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.paint.Color;
 
-// Example: Player class extending GameObject
+// Player class extending GameObject
 public class Player extends GameObject {
     private double speed;
-    private static final double TRIANGLE_SIZE = 100;
+    private static final double circleRadius = 10;
 
 
     public Player(double x, double y, double speed) {
         // Initialize position and size
-        super(x, y, TRIANGLE_SIZE, TRIANGLE_SIZE);
+        super(x, y, circleRadius, circleRadius);
         this.speed = speed;
     }
 
@@ -35,18 +35,15 @@ public class Player extends GameObject {
 
     @Override
     public void render(GraphicsContext gc) {
-        // Render the player (e.g., a simple rectangle)
+        // Set the fill color for the player
         gc.setFill(Color.DARKORANGE);
 
-        // Calculate the vertices of the equilateral triangle based on position (x, y)
-        double halfBase = TRIANGLE_SIZE / 2;
-        double height = Math.sqrt(3) / 2 * TRIANGLE_SIZE; // Height of the triangle
+        // Draw the circle at the player's position
+        gc.fillOval(x - circleRadius, y - circleRadius, circleRadius * 2, circleRadius * 2); // Center the circle at (x, y)
 
-        double[] xPoints = {x, x - halfBase, x + halfBase};
-        double[] yPoints = {y - height / 2, y + height / 2, y + height / 2};
-
-        gc.fillPolygon(xPoints, yPoints, 3); // Draw the triangle
+        // Optionally, draw the outline of the circle
         gc.setStroke(Color.WHITE);
         gc.setLineWidth(2);
+        gc.strokeOval(x - circleRadius, y - circleRadius, circleRadius * 2, circleRadius * 2);
     }
 }

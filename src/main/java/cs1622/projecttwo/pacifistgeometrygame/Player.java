@@ -2,23 +2,26 @@ package cs1622.projecttwo.pacifistgeometrygame;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.paint.Color;
 
-// Player class extending GameObject
+/**
+ * Class for the Player of the game. Inherits traits and behavior from GameObject class.
+ */
 public class Player extends GameObject {
-    private double speed;
+    // Radius of circle which is the player
     private static final double circleRadius = 10;
 
-
-    public Player(double x, double y, double speed) {
+    /**
+     * Constructor for Player that inherits its x and y values for it's positioning from GameObject and the radius
+     * @param x
+     * @param y
+     */
+    public Player(double x, double y) {
         // Initialize position and size
         super(x, y, circleRadius, circleRadius);
-        this.speed = speed;
     }
 
-    // Method to update player's position
+    // Empty method to update player's position
     @Override
     public void update(double deltaTime) {
-        handleMovement(deltaTime);
-
     }
 
     // Update player position based on mouse coordinates
@@ -48,18 +51,7 @@ public class Player extends GameObject {
         }
     }
 
-    // Handle player movement based on input (simple WASD or arrow key logic)
-    private void handleMovement(double deltaTime) {
-        // In a full game, you would read input here (e.g., key presses for movement)
-        // For example, if you implement key listeners:
-        // if (upKeyPressed) { y -= speed * deltaTime; }
-        // if (downKeyPressed) { y += speed * deltaTime; }
-        // if (leftKeyPressed) { x -= speed * deltaTime; }
-        // if (rightKeyPressed) { x += speed * deltaTime; }
-
-        // TODO: Implement actual input handling here
-    }
-
+    // Render the player on the screen
     @Override
     public void render(GraphicsContext gc) {
         // Set the fill color for the player

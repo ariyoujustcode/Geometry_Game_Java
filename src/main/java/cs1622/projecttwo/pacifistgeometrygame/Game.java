@@ -36,6 +36,9 @@ public class Game extends Application {
     // Border object
     private Border border;
 
+    // Gate object
+    private Gate gate;
+
     // Game loop animation timer
     private AnimationTimer gameLoop;
 
@@ -118,7 +121,8 @@ public class Game extends Application {
 
         // Initialize game objects
         border = new Border(120, 50);
-        player = new Player(screenWidth / 2, screenHeight / 2, 200);
+        player = new Player(screenWidth / 2, screenHeight / 2);
+        gate = new Gate(screenWidth / 2, screenHeight / 2);
 
         // Add a mouse movement listener to the canvas
         canvas.setOnMouseMoved(event -> {
@@ -160,6 +164,7 @@ public class Game extends Application {
         // Render objects
         border.render(gc);
         player.render(gc);
+        gate.render(gc);
     }
     public static void main(String[] args) {
         launch(args);

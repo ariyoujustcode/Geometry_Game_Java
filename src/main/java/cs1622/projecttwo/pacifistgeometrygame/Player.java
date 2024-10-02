@@ -51,6 +51,20 @@ public class Player extends GameObject {
         }
     }
 
+    // Get radius
+    public static double getRadius() {
+        return circleRadius;
+    }
+    @Override
+    public void move() {
+        // Player is moved with setPosition
+    }
+
+    @Override
+    public void explode() {
+
+    }
+
     // Render the player on the screen
     @Override
     public void render(GraphicsContext gc) {

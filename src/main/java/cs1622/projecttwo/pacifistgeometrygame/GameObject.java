@@ -18,6 +18,12 @@ public abstract class GameObject {
     public abstract void update(double deltaTime);
     public abstract void render(GraphicsContext gc);
 
+    // Explode
+    public abstract void explode();
+
+    // Movement
+    public abstract void move();
+
     // Getter for x position
     public double getX() {
         return x;

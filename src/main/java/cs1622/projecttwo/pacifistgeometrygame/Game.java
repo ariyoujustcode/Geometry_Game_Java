@@ -13,6 +13,12 @@ import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Random;
+
+
 /**
  * Main Game class to run the game, end the game and update score.
  */
@@ -36,11 +42,23 @@ public class Game extends Application {
     // Border object
     private Border border;
 
-    // Gate object
-    private Gate gate;
+    // Enemy
+    private Enemy enemy;
+
+    // List of gates
+    private List<Gate> gates;
+
+    // Last time a gate spawned
+    private double timeSinceLastGate = 0;
+
+    // Spawn interval of 5 seconds
+    private static final double gateSpawnInterval = 3;
 
     // Game loop animation timer
     private AnimationTimer gameLoop;
+
+    // Random
+    private Random random = new Random();
 
     /**
      * Start the program, open the game's screen and call the function to display the title screen.
@@ -122,7 +140,8 @@ public class Game extends Application {
         // Initialize game objects
         border = new Border(120, 50);
         player = new Player(screenWidth / 2, screenHeight / 2);
-        gate = new Gate(screenWidth / 2, screenHeight / 2);
+        enemy = new Enemy(screenWidth / 2, screenHeight / 2);
+        gates = new ArrayList<>();
 
         // Add a mouse movement listener to the canvas
         canvas.setOnMouseMoved(event -> {
@@ -151,6 +170,25 @@ public class Game extends Application {
      */
     public void updateGame(double deltaTime) {
         player.update(deltaTime);
+
+        // Update time since the last gate spawn
+        timeSinceLastGate += deltaTime;
+
+        // Spawn a new gate every 5 seconds
+        if (timeSinceLastGate >= gateSpawnInterval) {
+            spawnNewGate();
+            timeSinceLastGate = 0; // Reset the timer
+        }
+
+        // Check for collisions and explode gates
+        Iterator<Gate> gateIterator = gates.iterator();
+        while (gateIterator.hasNext()) {
+            Gate gate = gateIterator.next();
+            if (gate.checkCollisionWithPlayer(player)) {
+                gate.explode(); // Trigger the explosion
+                gateIterator.remove(); // Remove the gate after explosion
+            }
+        }
     }
 
     // Renders the game
@@ -164,8 +202,32 @@ public class Game extends Application {
         // Render objects
         border.render(gc);
         player.render(gc);
-        gate.render(gc);
+
+        // Render all gates
+        for (Gate gate : gates) {
+            gate.render(gc);
+        }
+
+        // Render enemy
+        enemy.render(gc);
     }
+
+    // Spawn a new gate at a random position within the border
+    private void spawnNewGate() {
+        // Define the safe boundaries for gate spawning inside the border
+        double minX = border.getX() + Gate.getGateWidth() / 2;
+        double maxX = border.getX() + border.getWidth() - Gate.getGateWidth() / 2;
+        double minY = border.getY() + Gate.getGateHeight() / 2;
+        double maxY = border.getY() + border.getHeight() - Gate.getGateHeight() / 2;
+
+        // Generate random coordinates within those boundaries
+        double randomX = minX + random.nextDouble() * (maxX - minX);
+        double randomY = minY + random.nextDouble() * (maxY - minY);
+
+        // Create a new Gate object and add it to the list of gates
+        gates.add(new Gate(randomX, randomY));
+    }
+
     public static void main(String[] args) {
         launch(args);
     }

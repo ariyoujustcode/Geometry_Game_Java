@@ -16,7 +16,6 @@ public class Gate extends GameObject {
     private static final double heightOfGateRect = 2;
     private double opacity = 1.0;
     private double expansionSpeed = 50.0;
-    private List<Particle> particles; // Particles for the burst effect
     private Random random = new Random();
 
     // Not blown up yet
@@ -25,7 +24,6 @@ public class Gate extends GameObject {
     // Constructor
     public Gate(double x, double y) {
         super(x, y, widthOfGateRect, heightOfGateRect);
-        particles = new ArrayList<>();
     }
 
     // Method to update gate's position
@@ -33,9 +31,6 @@ public class Gate extends GameObject {
     public void update(double deltaTime) {
         if (exploded) {
             expansionSpeed += 100 * deltaTime;  // Expand gate faster
-            for (Particle particle : particles) {
-                particle.update(deltaTime);
-            }
         }
     }
 
@@ -62,17 +57,6 @@ public class Gate extends GameObject {
     @Override
     public void explode() {
         exploded = true; // Exploded
-        createParticles(); // Explode effect
-    }
-
-    // Create particle burst for the explosion
-    private void createParticles() {
-        int numParticles = 20;  // Number of particles
-        for (int i = 0; i < numParticles; i++) {
-            double speed = random.nextDouble() * 100 + 50; // Speed of particles
-            double angle = random.nextDouble() * 360; // Direction of particles
-            particles.add(new Particle(x, y, angle, speed));
-        }
     }
 
     public boolean isExploded() {
@@ -93,14 +77,6 @@ public class Gate extends GameObject {
                 gc.fillRect(x - widthOfGateRect / 2, y - heightOfGateRect / 2, widthOfGateRect + expansionSpeed, heightOfGateRect + expansionSpeed);
                 gc.setGlobalAlpha(1.0);  // Reset opacity to default
             }
-
-            // Render particles
-            for (Particle particle : particles) {
-                particle.render(gc);
-            }
-
-            // Remove particles after they fade out
-            particles.removeIf(particle -> particle.opacity <= 0);
         }
     }
 

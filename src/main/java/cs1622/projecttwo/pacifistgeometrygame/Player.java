@@ -8,6 +8,7 @@ import javafx.scene.paint.Color;
 public class Player extends GameObject {
     // Radius of circle which is the player
     private static final double circleRadius = 10;
+    private boolean exploded = false;
 
     /**
      * Constructor for Player that inherits its x and y values for it's positioning from GameObject and the radius

@@ -8,6 +8,7 @@ import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
@@ -23,36 +24,36 @@ import java.util.Random;
  * Main Game class to run the game, end the game and update score.
  */
 public class Game extends Application {
-    // Instantiate canvas from Canvas parent class to determine size of interface
-    private Canvas canvas;
-
-    // Instantiate graphics context from GraphicsContext parent class for game graphics
-    private GraphicsContext gc;
-
-    // Nano time
-    private long lastTime = System.nanoTime();
-
-    // Screen dimensions
-    private static final double screenWidth = 1440;
-    private static final double screenHeight = 800;
-
-    // Instantiate player object
-    private Player player;
-
-    // Border object
-    private Border border;
-
-    // Enemy
-    private Enemy enemy;
+    // Instantiate objects
+    private Canvas canvas; // Canvas object
+    private GraphicsContext gc; // Graphics context object
+    private Player player; // Player object
+    private Border border; // Border object for border of the game
 
     // List of gates
     private List<Gate> gates;
 
     // Last time a gate spawned
     private double timeSinceLastGate = 0;
+    private static final double gateSpawnInterval = 3; // Three second spawn interval
 
-    // Spawn interval of 5 seconds
-    private static final double gateSpawnInterval = 3;
+    // List to hold enemies
+    private List<Enemy> enemies = new ArrayList<>();
+    private double enemySpawnTime = 0; // Keeps track of when to spawn the next enemy
+    private static final double enemySpawnInterval = 1.0; // in seconds
+
+    // Nano time
+    private long lastTime = System.nanoTime();
+
+    // Game Screen dimensions
+    private static final double screenWidth = 1440;
+    private static final double screenHeight = 800;
+
+    // private static final double EXPLOSION_RADIUS = 100;
+
+    // Cursor position
+    private double mouseX;
+    private double mouseY;
 
     // Game loop animation timer
     private AnimationTimer gameLoop;
@@ -71,6 +72,12 @@ public class Game extends Application {
 
         // Show starting screen
         showStartScreen(primaryStage);
+    }
+
+    private void handleMouseMovement(MouseEvent event) {
+        mouseX = event.getX();
+        mouseY = event.getY();
+        player.setPosition(mouseX, mouseY, border); // Update player position with mouse coordinates
     }
 
     /**
@@ -132,6 +139,7 @@ public class Game extends Application {
         canvas = new Canvas(screenWidth, screenHeight); // Draw new canvas
         gameRoot.getChildren().add(canvas); // Link canvas to gameRoot Stack Pane
         Scene gameScene = new Scene(gameRoot, screenWidth, screenHeight); // Instantiate a new scene
+        gameScene.setOnMouseMoved(this::handleMouseMovement);
         primaryStage.setScene(gameScene); // Use gameScene on the primaryStage
 
         // Fetch graphics context from canvas and assign it to gc
@@ -140,7 +148,6 @@ public class Game extends Application {
         // Initialize game objects
         border = new Border(120, 50);
         player = new Player(screenWidth / 2, screenHeight / 2);
-        enemy = new Enemy(screenWidth / 2, screenHeight / 2);
         gates = new ArrayList<>();
 
         // Add a mouse movement listener to the canvas
@@ -171,6 +178,14 @@ public class Game extends Application {
     public void updateGame(double deltaTime) {
         player.update(deltaTime);
 
+        // Update gates and check for explosions
+        for (Gate gate : gates) {
+            gate.update(deltaTime);
+            if (gate.isExploded()) {
+                checkEnemiesNearGate(gate);  // Check if enemies are within explosion range
+            }
+        }
+
         // Update time since the last gate spawn
         timeSinceLastGate += deltaTime;
 
@@ -189,6 +204,53 @@ public class Game extends Application {
                 gateIterator.remove(); // Remove the gate after explosion
             }
         }
+
+        // Update enemies
+        for (Enemy enemy : enemies) {
+            enemy.update(deltaTime);
+        }
+
+        // Track time and spawn enemies every second
+        enemySpawnTime += deltaTime;
+        if (enemySpawnTime >= enemySpawnInterval) {
+            // Spawn new enemy at a random location
+            double enemyX = Math.random() * screenWidth;
+            double enemyY = Math.random() * screenHeight;
+            enemies.add(new Enemy(enemyX, enemyY, player));
+
+            // Reset the spawn time counter
+            enemySpawnTime = 0;
+        }
+    }
+
+    // Method to check if any enemies are within the explosion radius of a gate
+    private void checkEnemiesNearGate(Gate gate) {
+        List<Enemy> enemiesToRemove = new ArrayList<>(); // Store enemies to remove after explosion
+        for (Enemy enemy : enemies) {
+            // Check if the enemy is within the updated 100-pixel explosion radius
+            if (isEnemyNearGate(enemy, gate)) {
+                // Trigger enemy explosion immediately
+                enemy.explode();
+                enemiesToRemove.add(enemy);  // Mark the enemy for immediate removal
+            }
+        }
+        // Remove all enemies that were within the explosion radius
+        enemies.removeAll(enemiesToRemove);
+    }
+
+    // Method to check if an enemy is within 100 pixels of a gate's edge
+    private boolean isEnemyNearGate(Enemy enemy, Gate gate) {
+        // Get gate bounds
+        double gateMinX = gate.getX() - 50;
+        double gateMaxX = gate.getX() + 50;
+        double gateMinY = gate.getY() - 50;
+        double gateMaxY = gate.getY() + 50;
+
+        // Get enemy position
+        double enemyX = enemy.getX();
+        double enemyY = enemy.getY();
+
+        return enemyX > gateMinX && enemyX < gateMaxX || enemyY > gateMinY && enemyY < gateMaxY;
     }
 
     // Renders the game
@@ -208,8 +270,10 @@ public class Game extends Application {
             gate.render(gc);
         }
 
-        // Render enemy
-        enemy.render(gc);
+        // Render all enemies
+        for (Enemy enemy : enemies) {
+            enemy.render(gc);
+        }
     }
 
     // Spawn a new gate at a random position within the border

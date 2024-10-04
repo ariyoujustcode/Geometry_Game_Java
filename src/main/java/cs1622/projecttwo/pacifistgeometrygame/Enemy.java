@@ -15,6 +15,7 @@ public class Enemy extends GameObject {
     private double opacity = 1.0;
     private double expansionSpeed = 50.0;
 
+    // Constructor
     public Enemy(double x, double y, Player player) {
         super(x, y, squareWidth, squareHeight);
         this.player = player; // Reference to the player object
@@ -49,11 +50,6 @@ public class Enemy extends GameObject {
         // Move the enemy towards the player
         this.x += dirX * SPEED * deltaTime;
         this.y += dirY * SPEED * deltaTime;
-    }
-
-    @Override
-    public void move() {
-        // No additional movement logic for now
     }
 
     // Render the enemy on the screen

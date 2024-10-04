@@ -21,9 +21,6 @@ public abstract class GameObject {
     // Explode
     public abstract void explode();
 
-    // Movement
-    public abstract void move();
-
     // Getter for x position
     public double getX() {
         return x;

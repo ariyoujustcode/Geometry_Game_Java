@@ -2,6 +2,7 @@ package cs1622.projecttwo.pacifistgeometrygame;
 
 import javafx.animation.AnimationTimer;
 import javafx.application.Application;
+import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.canvas.Canvas;
@@ -9,6 +10,8 @@ import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
@@ -27,6 +30,8 @@ public class Game extends Application {
     // Instantiate objects
     private Canvas canvas; // Canvas object
     private GraphicsContext gc; // Graphics context object
+
+    // Instantiate game objects
     private Player player; // Player object
     private Border border; // Border object for border of the game
 
@@ -38,7 +43,7 @@ public class Game extends Application {
     private static final double gateSpawnInterval = 3; // Three second spawn interval
 
     // List to hold enemies
-    private List<Enemy> enemies = new ArrayList<>();
+    private List<Enemy> enemies = new ArrayList<>(); // Store enemies in an array list
     private double enemySpawnTime = 0; // Keeps track of when to spawn the next enemy
     private static final double enemySpawnInterval = 1.0; // in seconds
 
@@ -74,6 +79,10 @@ public class Game extends Application {
         showStartScreen(primaryStage);
     }
 
+    /**
+     * Get coordinates of the mouse
+     * @param event
+     */
     private void handleMouseMovement(MouseEvent event) {
         mouseX = event.getX();
         mouseY = event.getY();
@@ -88,7 +97,7 @@ public class Game extends Application {
         // Create surface of interface (size)
         canvas = new Canvas(screenWidth, screenHeight); // Screen size
         gc = canvas.getGraphicsContext2D(); // Render screen
-        gc.setFill(Color.BLACK); // Fill color of rect (black)
+        gc.setFill(Color.BLACK); // Fill color of rect
         gc.fillRect(0, 0, canvas.getWidth(), canvas.getHeight()); // Fill this size rect (screen)
 
         // Create buttons
@@ -201,8 +210,15 @@ public class Game extends Application {
             Gate gate = gateIterator.next();
             if (gate.checkCollisionWithPlayer(player)) {
                 gate.explode(); // Trigger the explosion
+                checkEnemiesNearGate(gate); // Added to see if it explodes enemies near gate
                 gateIterator.remove(); // Remove the gate after explosion
             }
+        }
+
+        // Check for player collisions with enemies
+        if (checkPlayerCollisionWithEnemies()) {
+            endGame((Stage) canvas.getScene().getWindow()); // End the game if collision occurs
+            return; // Skip further updates if game is over
         }
 
         // Update enemies
@@ -238,19 +254,33 @@ public class Game extends Application {
         enemies.removeAll(enemiesToRemove);
     }
 
+    // Method to check if the player collides with any enemies
+    private boolean checkPlayerCollisionWithEnemies() {
+        for (Enemy enemy : enemies) {
+            if (player.checkCollisionWith(enemy)) {
+                return true; // Collision detected
+            }
+        }
+        return false; // No collision
+    }
+
     // Method to check if an enemy is within 100 pixels of a gate's edge
     private boolean isEnemyNearGate(Enemy enemy, Gate gate) {
-        // Get gate bounds
-        double gateMinX = gate.getX() - 50;
-        double gateMaxX = gate.getX() + 50;
-        double gateMinY = gate.getY() - 50;
-        double gateMaxY = gate.getY() + 50;
+        double gateX = gate.getX();
+        double gateY = gate.getY();
 
-        // Get enemy position
+        // Define the boundaries of a 200x200 square centered on the gate
+        double gateMinX = gateX - 150;
+        double gateMaxX = gateX + 150;
+        double gateMinY = gateY - 150;
+        double gateMaxY = gateY + 150;
+
+        // Get the enemy's position
         double enemyX = enemy.getX();
         double enemyY = enemy.getY();
 
-        return enemyX > gateMinX && enemyX < gateMaxX || enemyY > gateMinY && enemyY < gateMaxY;
+        // Check if the enemy is inside the 100-pixel square
+        return (enemyX >= gateMinX && enemyX <= gateMaxX) && (enemyY >= gateMinY && enemyY <= gateMaxY);
     }
 
     // Renders the game
@@ -292,6 +322,58 @@ public class Game extends Application {
         gates.add(new Gate(randomX, randomY));
     }
 
+    // Method to end the game and display a Game Over screen
+    private void endGame(Stage primaryStage) {
+        // Stop the game loop
+        if (gameLoop != null) {
+            gameLoop.stop();
+        }
+
+        // Create a BorderPane layout for the Game Over screen
+        BorderPane borderPane = new BorderPane();
+
+        // Set the background color of the BorderPane to black using CSS
+        borderPane.setStyle("-fx-background-color: black;");
+
+        // Game Over message
+        Label gameOverLabel = new Label("Game Over");
+        gameOverLabel.setTextFill(Color.ORANGE);
+        gameOverLabel.setStyle("-fx-font-size: 100; -fx-font-weight: bold");
+
+        // Restart button
+        Button restartButton = new Button("Restart Game");
+        restartButton.setStyle("-fx-background-color: black; -fx-border-radius: 5; -fx-border-color: cyan; -fx-border-width: 10; -fx-text-fill: cyan; -fx-font-size: 50; -fx-min-width: 400");
+        restartButton.setOnAction(e -> startGame(primaryStage)); // Restart the game
+
+        // Quit button
+        Button quitButton = new Button("Quit Game");
+        quitButton.setStyle("-fx-background-color: black; -fx-border-radius: 5; -fx-border-color: cyan; -fx-border-width: 10; -fx-text-fill: cyan; -fx-font-size: 50; -fx-min-width: 400");
+        quitButton.setOnAction(e -> primaryStage.close()); // Close the application
+
+        // Create an HBox to hold the buttons with some spacing and center alignment
+        VBox buttonBox = new VBox(20); // 20 pixels spacing between buttons
+        buttonBox.getChildren().addAll(restartButton, quitButton);
+        buttonBox.setAlignment(Pos.CENTER);
+
+        // Center the Game Over label in the middle of the BorderPane
+        borderPane.setCenter(gameOverLabel);
+        borderPane.setBottom(buttonBox);
+
+        // Add some padding to the bottom region (buttons)
+        BorderPane.setMargin(buttonBox, new Insets(100, 0, 100, 0)); // Add margins to bottom
+
+        // Create a new scene for the Game Over screen
+        Scene gameOverScene = new Scene(borderPane, screenWidth, screenHeight);
+
+        // Set the Game Over scene on the primary stage
+        primaryStage.setScene(gameOverScene);
+        primaryStage.show();
+    }
+
+
+
+
+    // Main function to launch game
     public static void main(String[] args) {
         launch(args);
     }

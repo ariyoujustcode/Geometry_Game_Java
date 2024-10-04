@@ -34,11 +34,6 @@ public class Gate extends GameObject {
         }
     }
 
-    @Override
-    public void move() {
-        // Gate movements
-    }
-
     // Check if the gate is touching the player (circle collision detection)
     public boolean checkCollisionWithPlayer(Player player) {
         double playerX = player.getX();

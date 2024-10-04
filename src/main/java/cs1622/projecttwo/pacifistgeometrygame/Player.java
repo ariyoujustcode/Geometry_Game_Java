@@ -52,18 +52,29 @@ public class Player extends GameObject {
         }
     }
 
+    public boolean checkCollisionWith(Enemy enemy) {
+        double playerX = this.getX();
+        double playerY = this.getY();
+        double enemyX = enemy.getX();
+        double enemyY = enemy.getY();
+
+        // Simple collision detection based on proximity
+        double distance = Math.sqrt(Math.pow(playerX - enemyX, 2) + Math.pow(playerY - enemyY, 2));
+        return distance < (getRadius() / 2 + getRadius() / 2); // Adjust as needed for the collision radius
+    }
+
     // Get radius
     public static double getRadius() {
         return circleRadius;
     }
-    @Override
-    public void move() {
-        // Player is moved with setPosition
-    }
 
     @Override
     public void explode() {
+        exploded = true;
+    }
 
+    public boolean isExploded() {
+        return exploded;
     }
 
     // Render the player on the screen

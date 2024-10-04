@@ -23,11 +23,6 @@ public class Border extends GameObject {
     }
 
     @Override
-    public void move() {
-        // Empty because border doesn't move.
-    }
-
-    @Override
     public void render(GraphicsContext gc) {
         gc.setFill(Color.BLACK);
         gc.fillRect(x, y, boxWidth, boxHeight);

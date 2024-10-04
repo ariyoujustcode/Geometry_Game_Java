@@ -11,10 +11,10 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.BorderPane;
-import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
+import javafx.scene.text.Font;
 import javafx.stage.Stage;
 
 import java.util.ArrayList;
@@ -65,6 +65,8 @@ public class Game extends Application {
 
     // Random
     private Random random = new Random();
+
+    private int score = 0; // Initialize score at 0
 
     /**
      * Start the program, open the game's screen and call the function to display the title screen.
@@ -248,6 +250,7 @@ public class Game extends Application {
                 // Trigger enemy explosion immediately
                 enemy.explode();
                 enemiesToRemove.add(enemy);  // Mark the enemy for immediate removal
+                score += 500; // Add 500 points for each enemy destroyed
             }
         }
         // Remove all enemies that were within the explosion radius
@@ -290,6 +293,12 @@ public class Game extends Application {
 
         gc.setFill(Color.BLACK); // Fill color of rect (black)
         gc.fillRect(0, 0, canvas.getWidth(), canvas.getHeight()); // Fill this size rect (screen)
+
+        // Display the score at the top center of the screen
+        gc.setFill(Color.CYAN);
+        gc.setFont(new Font("Arial", 24)); // Font and size
+        String scoreText = "Score: " + score;
+        gc.fillText(scoreText.toUpperCase(), screenWidth / 2 - 100, 35); // Display score in the center
 
         // Render objects
         border.render(gc);
@@ -369,9 +378,6 @@ public class Game extends Application {
         primaryStage.setScene(gameOverScene);
         primaryStage.show();
     }
-
-
-
 
     // Main function to launch game
     public static void main(String[] args) {

@@ -33,10 +33,12 @@ public class Enemy extends GameObject {
         if (!exploded) {
             moveTowardsPlayer(deltaTime);
         }
-        // No expansion or fading effect needed, the enemy will be removed immediately after exploding
     }
 
-    // Move the enemy towards the player
+    /**
+     * Move the enemies towards the player's position
+     * @param deltaTime
+     */
     private void moveTowardsPlayer(double deltaTime) {
         // Calculate direction towards the player
         double dirX = player.getX() - this.x;
@@ -69,7 +71,6 @@ public class Enemy extends GameObject {
                 gc.setGlobalAlpha(1.0);  // Reset opacity to default
             }
         }
-        // No rendering needed after the enemy explodes
     }
 }
 

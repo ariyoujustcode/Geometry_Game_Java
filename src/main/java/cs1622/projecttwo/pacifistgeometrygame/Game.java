@@ -1,5 +1,6 @@
 package cs1622.projecttwo.pacifistgeometrygame;
 
+// Imports
 import javafx.animation.AnimationTimer;
 import javafx.application.Application;
 import javafx.geometry.Insets;
@@ -27,7 +28,7 @@ import java.util.Random;
  * Main Game class to run the game, end the game and update score.
  */
 public class Game extends Application {
-    // Instantiate objects
+    // Instantiate canvas and graphics objects
     private Canvas canvas; // Canvas object
     private GraphicsContext gc; // Graphics context object
 
@@ -241,7 +242,10 @@ public class Game extends Application {
         }
     }
 
-    // Method to check if any enemies are within the explosion radius of a gate
+    /**
+     * Explodes the enemy if close enough to gate and adds points to the score
+     * @param gate
+     */
     private void checkEnemiesNearGate(Gate gate) {
         List<Enemy> enemiesToRemove = new ArrayList<>(); // Store enemies to remove after explosion
         for (Enemy enemy : enemies) {
@@ -267,7 +271,12 @@ public class Game extends Application {
         return false; // No collision
     }
 
-    // Method to check if an enemy is within 100 pixels of a gate's edge
+    /**
+     * Checks whether the enemy is near a gate in order to track whether enemy should explode
+     * @param enemy
+     * @param gate
+     * @return
+     */
     private boolean isEnemyNearGate(Enemy enemy, Gate gate) {
         double gateX = gate.getX();
         double gateY = gate.getY();
@@ -315,7 +324,9 @@ public class Game extends Application {
         }
     }
 
-    // Spawn a new gate at a random position within the border
+    /**
+     * Spawns a new Gate object within border
+     */
     private void spawnNewGate() {
         // Define the safe boundaries for gate spawning inside the border
         double minX = border.getX() + Gate.getGateWidth() / 2;
@@ -331,7 +342,10 @@ public class Game extends Application {
         gates.add(new Gate(randomX, randomY));
     }
 
-    // Method to end the game and display a Game Over screen
+    /**
+     * Ends game and displays the Game Over Screen. Player can restart the game or quit the program.
+     * @param primaryStage
+     */
     private void endGame(Stage primaryStage) {
         // Stop the game loop
         if (gameLoop != null) {

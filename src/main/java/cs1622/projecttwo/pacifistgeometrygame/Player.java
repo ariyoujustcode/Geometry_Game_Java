@@ -25,7 +25,12 @@ public class Player extends GameObject {
     public void update(double deltaTime) {
     }
 
-    // Update player position based on mouse coordinates
+    /**
+     * Updates player position based on mouse coordinates
+     * @param x
+     * @param y
+     * @param border
+     */
     public void setPosition(double x, double y, Border border) {
         // Get the boundaries of the Border
         double minX = border.getX() + 5;
@@ -52,6 +57,11 @@ public class Player extends GameObject {
         }
     }
 
+    /**
+     * Checks collision with enemy
+     * @param enemy
+     * @return
+     */
     public boolean checkCollisionWith(Enemy enemy) {
         double playerX = this.getX();
         double playerY = this.getY();

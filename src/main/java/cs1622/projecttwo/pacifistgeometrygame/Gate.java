@@ -2,21 +2,15 @@ package cs1622.projecttwo.pacifistgeometrygame;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.paint.Color;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Random;
-
 /**
  * Create gates that spawn to allow the player to move through them to destroy the nearby enemies.
  */
-
 public class Gate extends GameObject {
     // Variables for gate
     private static final double widthOfGateRect = 60;
     private static final double heightOfGateRect = 2;
     private double opacity = 1.0;
     private double expansionSpeed = 50.0;
-    private Random random = new Random();
 
     // Not blown up yet
     private boolean exploded = false;
@@ -34,7 +28,11 @@ public class Gate extends GameObject {
         }
     }
 
-    // Check if the gate is touching the player (circle collision detection)
+    /**
+     * Check if player ran through the gate
+     * @param player
+     * @return
+     */
     public boolean checkCollisionWithPlayer(Player player) {
         double playerX = player.getX();
         double playerY = player.getY();

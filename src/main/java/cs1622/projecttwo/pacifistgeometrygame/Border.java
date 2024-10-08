@@ -3,7 +3,9 @@ package cs1622.projecttwo.pacifistgeometrygame;
 import javafx.scene.paint.Color;
 import javafx.scene.canvas.GraphicsContext;
 
-
+/**
+ * Border class defines the border and the render function to allow for the border to be rendered in game
+ */
 public class Border extends GameObject {
     private static double boxWidth = 1200;
     private static double boxHeight = 700;

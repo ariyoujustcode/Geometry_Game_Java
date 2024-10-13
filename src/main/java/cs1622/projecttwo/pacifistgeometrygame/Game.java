@@ -5,6 +5,7 @@ import javafx.animation.AnimationTimer;
 import javafx.application.Application;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
+import javafx.scene.Cursor;
 import javafx.scene.Scene;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
@@ -152,6 +153,7 @@ public class Game extends Application {
         gameRoot.getChildren().add(canvas); // Link canvas to gameRoot Stack Pane
         Scene gameScene = new Scene(gameRoot, screenWidth, screenHeight); // Instantiate a new scene
         gameScene.setOnMouseMoved(this::handleMouseMovement);
+        gameScene.setCursor(Cursor.NONE);
         primaryStage.setScene(gameScene); // Use gameScene on the primaryStage
 
         // Fetch graphics context from canvas and assign it to gc
